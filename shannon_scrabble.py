@@ -33,7 +33,7 @@ print 'training..'
 for n_lines, line in enumerate(f, 1):
     # words
     words = re.sub(r'\W+', ' ', line).split() # tokenize with punctuation and whitespaces
-    word_counts[''] += len(words)
+    word_counts[''] += len(words) # this little hack is useful for 1-grams
     for n in range(WORD_NGRAM_ORDER):
         for i in range(len(words)):
             if i >= n:
@@ -47,6 +47,8 @@ for n_lines, line in enumerate(f, 1):
                 char_counts[chars[i-n:i+1]] += 1
     if n_lines % 10000 == 0: print n_lines
 f.close()
+
+print 'model has %d params' % (len(char_counts) + len(word_counts))
 print
 
 def charProb(c):
