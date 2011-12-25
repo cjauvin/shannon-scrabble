@@ -8,7 +8,7 @@
 # December 2011
 
 from __future__ import division
-import re, math, gzip
+import re, math, gzip, heapq
 from collections import defaultdict
 
 msg = """|de|  | f|Cl|nf|ed|au| i|ti|  |ma|ha|or|nn|ou| S|on|nd|on|
@@ -22,7 +22,7 @@ msg = """|de|  | f|Cl|nf|ed|au| i|ti|  |ma|ha|or|nn|ou| S|on|nd|on|
 
 EPSILON = 1e-10
 CHAR_NGRAM_ORDER = 6
-WORD_NGRAM_ORDER = 2
+WORD_NGRAM_ORDER = 1
 
 char_counts = defaultdict(int)
 word_counts = defaultdict(int)
@@ -120,9 +120,14 @@ for j, line in enumerate(msg.split('\n')):
 
 n_trials = 0
 visited = set()
-score = float('-inf')
-while score < float('inf'):
-    score, grid = max([(gridScore(next_grid), next_grid) for next_grid in nextGrids(grid)])
+score = float('inf')
+frontier = []
+while score > float('-inf'):
+    for next_grid in nextGrids(grid):
+        # using a min-heap so score has to be negated
+        heapq.heappush(frontier, (-gridScore(next_grid), next_grid))
+    score, grid = heapq.heappop(frontier)
+    #score, grid = min([(-gridScore(next_grid), next_grid) for next_grid in nextGrids(grid)])
     visited.add(grid)
     print repr(grid)
     print score    
